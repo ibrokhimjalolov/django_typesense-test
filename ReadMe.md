@@ -1,0 +1,1 @@
+### python manage.py rebuild_typesense command to rebuild typesense index
