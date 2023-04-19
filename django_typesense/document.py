@@ -70,7 +70,7 @@ class TypesenseDocument:
         return cls._collection.documents.create(cls._model_instance_to_typesense(instance))
 
     @classmethod
-    def insert_document_bulk(cls, instances, batch_size=None):
+    def insert_document_bulk(cls, instances, batch_size=1000):
         """
         Bulk insert document to typesense
         :param instances:

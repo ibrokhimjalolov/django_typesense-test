@@ -21,7 +21,9 @@ class TsSearchFilterView(ListAPIView):
         hits = self.document.search(ts_search_schema)
         self._facets = hits['facet_counts']
         ids = [hit['document']['id'] for hit in hits['hits']]
-        return queryset.filter(id__in=ids)
+        queryset = queryset.filter(id__in=ids)
+        queryset = sorted(queryset, key=lambda x: ids.index(str(x.pk)))
+        return queryset
 
     def get_paginated_response(self, data):
         return self.paginator.get_paginated_response(data, facets=self._facets)

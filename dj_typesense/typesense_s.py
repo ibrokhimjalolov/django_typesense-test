@@ -1,20 +1,16 @@
+import os
+
 import environ
 
 env = environ.Env()
-env.read_env('.env')
-
+env.read_env(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
 
 TYPESENSE_CLIENT_SETTINGS = {
     'api_key': env.str('TYPESENSE_API_KEY', default='xxx'),
     'nodes': [{
-        'host': env.str('TYPESENSE_HOST', default='typesense'),
+        'host': env.str('TYPESENSE_HOST', default='localhost'),
         'port': env.str('TYPESENSE_PORT', default='8108'),
         'protocol': env.str('TYPESENSE_PROTOCOL', default='http'),
     }],
     'connection_timeout_seconds': 20
 }
-
-
-TYPESENSE_COLLECTIONS = (
-    "blog.documents.PostDocument",
-)
