@@ -88,7 +88,6 @@ DATABASES = {
         "PASSWORD": env.get_value("DB_PASSWORD"),
         "HOST": env.str("DB_HOST"),
         "PORT": env.str("DB_PORT"),
-        "ATOMIC_REQUESTS": True,
     }
 }
 

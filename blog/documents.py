@@ -1,42 +1,30 @@
-from blog.models import Post
-from django_typesense.document import TypesenseDocument, register_doc
+from django_typesense.document import Document
+from django_typesense.collection import Collection
+from django_typesense.fields import CharField
+from .models import Post
 
-from django_typesense.serializer import TypesenseDocumentSerializer
 
-
-# typesense field types
 STRING = "string"
 INT32 = "int32"
 BOOL = "bool"
 STRING_ARRAY = "string[]"
 INT32_ARRAY = "int32[]"
 BOOL_ARRAY = "bool[]"
+
+class PostDocument(Document):
+    model = Post
+    fields = [
+        CharField(name='id', default='', type=STRING),
+        CharField(name='title', default='', type=STRING, index=True),
+    ]
+
+
+# typesense field types
+
 # end typesense field types
 
 
-class PostDocumentSerializer(TypesenseDocumentSerializer):
-
-    class Meta:
-        model = Post
-        fields = [
-            "id",
-            "title",
-            "body",
-            "number"
-        ]
-
-    @classmethod
-    def get_document_fields(cls) -> list:
-        return [
-            {"name": "id", "type": STRING},
-            {"name": "title", "type": STRING},
-            {"name": "body", "type": STRING, "facet": True},
-            {"name": "number", "type": INT32, "facet": True, "sortable": True},
-        ]
-
-
-@register_doc
-class PostDocument(TypesenseDocument):
-    DOCUMENT_NAME = "post_document"
-    typesense_serializer_class = PostDocumentSerializer
-    dj_model_cls = Post
+PostCollection = Collection(
+    collection_name="posts",
+    document_types=[PostDocument],
+)

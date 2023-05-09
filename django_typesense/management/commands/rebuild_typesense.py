@@ -1,7 +1,7 @@
 import datetime
 
 from django.core.management.base import BaseCommand
-from ...document import registry
+
 
 
 class Command(BaseCommand):
@@ -12,16 +12,17 @@ class Command(BaseCommand):
         self.stdout.write(str(datetime.datetime.now()) + " | " + self.style.SUCCESS(message))
 
     def handle(self, *args, **options):
-        collections = registry.values()
-        for collection_class in collections:
+        from ...collection import registry
+        for collection_name, collection in registry.items():
             try:
-                self.log(collection_class, "Deleting document...")
-                collection_class.delete_collection()
+                self.log(collection, "Deleting document...")
+                collection.delete_collection()
             except Exception as e:
                 self.log(e)
-            self.log(collection_class, "Creating document...")
-            collection_class.create_collection()
-            self.log(f"Indexing {collection_class.get_model_queryset().count()} items...")
-            collection_class.insert_document_bulk(collection_class.get_model_queryset())
-            self.log(collection_class, "Done!")
+            self.log(collection, "Creating document...")
+            collection.create_collection()
+            for document in collection.get_document_types():
+                instances = document.model._default_manager.all()
+                collection.insert_document_bulk(instances)
+                self.log(collection, "Done!")
             self.log("=" * 20)

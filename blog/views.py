@@ -1,16 +1,14 @@
-from django_typesense.filter_backends import TsSearchBackend, TsFilterBackend
-from django_typesense.views import TsSearchFilterView
-from .documents import PostDocument
-from .models import Post
-from .serializers import PostSerializer
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
-class PostExtraFilterView(TsSearchFilterView):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
-    document = PostDocument
-    filter_backends = [TsSearchBackend, TsFilterBackend]
-    search_fields = ['title', 'body']
-    filter_fields = {
-        'number': ['lte', 'gte', 'eq', 'neq', 'int__in'],
-    }
+class PostExtraFilterView(APIView):
+    
+    def get(self, request):
+        from .documents import PostCollection
+        collection = PostCollection.get_collection()
+        print(collection)
+        
+        data = collection.documents.search({"q": "", "query_by": "title"})
+        print(data)
+        return Response(data)
